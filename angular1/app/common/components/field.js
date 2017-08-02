@@ -1,3 +1,4 @@
+(function(){
 angular.module('primeiraApp').component('field', {
     bindings: {
       id: '@',
@@ -10,7 +11,7 @@ angular.module('primeiraApp').component('field', {
     controller: [
       'gridSystem',
       function(gridSystem) {
-        this.$onInit = () => this.gridClasses = gridSystem.toCssClasses(this.grid)
+        this.gridClasses = gridSystem.toCssClasses(this.grid)
       }
     ],
     template: `
@@ -22,4 +23,5 @@ angular.module('primeiraApp').component('field', {
       </div>
     </div>
     `
-  });
+  })
+})()
