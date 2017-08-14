@@ -4,24 +4,28 @@ const BillingCycle = require('./billingCycle');
 BillingCycle.methods(['get', 'post', 'put', 'delete']);
 BillingCycle.updateOptions({new : true, runValidators: true });
 
-BillingCycle.after('post', sendErrorsOrNext).after('put', sendErrorsOrNext);
+BillingCycle.after('post', saveSummary).after('put', saveSummary);
 
- function sendErrorsOrNext(req, res, next) {
+ function saveSummary(req, res, next) {
    const bundle = res.locals.bundle
 
    if(bundle.errors) {
      var errors = parseErrors(bundle.errors)
      res.status(500).json({errors})
    } else {
-     next()
+     const summary = {
+       billingCycle: bundle._id,
+       credit: _.sumBy(bundle.credits, 'value'),
+       debt: _.sumBy(bundle.debts, 'value')
+     }
    }
- };
+ }
 
 function parseErrors(nodeRestfulErrors) {
   const errors = []
   _.forIn(nodeRestfulErrors, error => errors.push(error.message))
   return errors
-};
+}
 
 
 BillingCycle.route('count', function (req,res,next) {
@@ -31,6 +35,6 @@ BillingCycle.route('count', function (req,res,next) {
     } else {
       res.json({value})
     }
-  });
-});
+  })
+})
 module.exports = BillingCycle;
